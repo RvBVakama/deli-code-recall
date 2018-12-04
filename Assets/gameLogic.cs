@@ -13,43 +13,116 @@ public struct Items
 
 public class gameLogic : MonoBehaviour
 {
-    public GameObject go;
-
     // the number of rounds in a session
     private int m_nRounds = 0;
 
     // list of items in list.txt
     Items[] Items;
 
-    // access to the three buttons
-    Button button1, button2, button3 = null;
-
     private void OnEnable()
     {
         // listereners on each button
-        button1 = GameObject.Find("Game").transform.GetChild(1).GetComponent<Button>();
-        button1.onClick.AddListener(Button1Clicked);
-        button2 = GameObject.Find("Game").transform.GetChild(2).GetComponent<Button>();
-        button2.onClick.AddListener(Button2Clicked);
-        button3 = GameObject.Find("Game").transform.GetChild(3).GetComponent<Button>();
-        button3.onClick.AddListener(Button3Clicked);
+        btnarr[0] = GameObject.Find("Game").transform.GetChild(1).GetComponent<Button>();
+        btnarr[0].onClick.AddListener(Button1Clicked);
+        btnarr[1] = GameObject.Find("Game").transform.GetChild(2).GetComponent<Button>();
+        btnarr[1].onClick.AddListener(Button2Clicked);
+        btnarr[2] = GameObject.Find("Game").transform.GetChild(3).GetComponent<Button>();
+        btnarr[2].onClick.AddListener(Button3Clicked);
 
         LoadList();
+
+        NewSet();
     }
+
+    // store all the buttons
+    Button[] btnarr = new Button[3];
+    int m_nCorrectProduct = 0;
+    int m_nCorrectCode = 0;
+
+    public void NewSet()
+    {
+        // the product to guess
+        m_nCorrectProduct = Random.Range(0, Items.Length);
+
+        // set the name of the product
+        GameObject.Find("ProductName").GetComponent<Text>().text = Items[m_nCorrectProduct].itemName;
+
+        // for the random picker logic
+        List<int> numlist = new List<int>();
+
+        // add numbers to the list
+        for (int i = 0; i < btnarr.Length; i++)
+            numlist.Add(i);
+
+        // the number to pick out
+        int n = Mathf.RoundToInt(Random.Range(0.0f, numlist.Count - 1));
+        int num = numlist[n];
+        // remove this num from the list
+        numlist.RemoveAt(n);
+
+        // set the possible options from the list of codes
+        btnarr[num].transform.GetComponentInChildren<Text>().text = Items[m_nCorrectProduct].itemCode.ToString();
+        // convert string to float and remember the correct code
+        m_nCorrectCode = int.Parse(Items[m_nCorrectProduct].itemCode.ToString());
+        
+        // the number to pick out
+        n = Mathf.RoundToInt(Random.Range(0.0f, numlist.Count - 1));
+        num = numlist[n];
+        // remove this num from the list
+        numlist.RemoveAt(n);
+
+        btnarr[num].transform.GetComponentInChildren<Text>().text = Items[Random.Range(0, Items.Length)].itemCode.ToString();
+
+        // the number to pick out
+        num = numlist[0];
+        // remove the last value from the list
+        numlist.RemoveAt(0);
+
+        btnarr[num].transform.GetComponentInChildren<Text>().text = Items[Random.Range(0, Items.Length)].itemCode.ToString();
+    }
+
+    int m_nGotCorrect = 0;
 
     public void Button1Clicked()
     {
-        Debug.Log("1");
+        // if this button has the correct code log that it was right
+        if (m_nCorrectCode == int.Parse(btnarr[0].transform.GetComponentInChildren<Text>().text))
+        {
+            ++m_nGotCorrect;
+            NewSet();
+        }
+        else
+        {
+            print("wrong");
+        }
     }
 
     public void Button2Clicked()
     {
-        Debug.Log("2");
+        // if this button has the correct code log that it was right
+        if (m_nCorrectCode == int.Parse(btnarr[1].transform.GetComponentInChildren<Text>().text))
+        {
+            ++m_nGotCorrect;
+            NewSet();
+        }
+        else
+        {
+            print("wrong");
+        }
     }
 
     public void Button3Clicked()
     {
-        Debug.Log("3");
+        // if this button has the correct code log that it was right
+        if (m_nCorrectCode == int.Parse(btnarr[2].transform.GetComponentInChildren<Text>().text))
+        {
+            ++m_nGotCorrect;
+            NewSet();
+        }
+        else
+        {
+            print("wrong");
+        }
     }
 
     public void LoadList()
@@ -68,14 +141,6 @@ public class gameLogic : MonoBehaviour
             // respective code
             Items[i / 2].itemCode = float.Parse(items[i + 1]);
         }
-
-        Color col = new Color();
-        col.r = Random.Range(0.0f, 1.0f);
-        col.g = Random.Range(0.0f, 1.0f);
-        col.b = Random.Range(0.0f, 1.0f);
-
-        go.GetComponent<MeshRenderer>().materials[0].color = col;
-
     }
 }
 
