@@ -16,6 +16,9 @@ public class gameLogic : MonoBehaviour
     // the number of rounds in a session
     private int m_nRounds = 0;
 
+    // the current round
+    private int m_nRoundCount = 0;
+
     // list of items in list.txt
     Items[] Items;
 
@@ -41,6 +44,12 @@ public class gameLogic : MonoBehaviour
 
     public void NewSet()
     {
+        if (m_nRoundCount > m_nRounds)
+        {
+            EndGame();
+            return;
+        }
+
         // the product to guess
         m_nCorrectProduct = Random.Range(0, Items.Length);
 
@@ -99,13 +108,15 @@ public class gameLogic : MonoBehaviour
             else
                 cont = false;
         }
+
     }
 
     int m_nGotCorrect = 0;
 
     public void Button1Clicked()
     {
-        print("wrong");
+        ++m_nRoundCount;
+
         // if this button has the correct code log that it was right
         if (m_nCorrectCode == int.Parse(btnarr[0].transform.GetComponentInChildren<Text>().text))
         {
@@ -114,12 +125,14 @@ public class gameLogic : MonoBehaviour
         }
         else
         {
+            print("wrong");
         }
     }
 
     public void Button2Clicked()
     {
-        print("wrong");
+        ++m_nRoundCount;
+
         // if this button has the correct code log that it was right
         if (m_nCorrectCode == int.Parse(btnarr[1].transform.GetComponentInChildren<Text>().text))
         {
@@ -128,12 +141,14 @@ public class gameLogic : MonoBehaviour
         }
         else
         {
+            print("wrong");
         }
     }
 
     public void Button3Clicked()
     {
-        print("wrong");
+        ++m_nRoundCount;
+
         // if this button has the correct code log that it was right
         if (m_nCorrectCode == int.Parse(btnarr[2].transform.GetComponentInChildren<Text>().text))
         {
@@ -142,6 +157,7 @@ public class gameLogic : MonoBehaviour
         }
         else
         {
+            print("wrong");
         }
     }
 
@@ -161,6 +177,14 @@ public class gameLogic : MonoBehaviour
             // respective code
             Items[i / 2].itemCode = float.Parse(items[i + 1]);
         }
+
+        // set the rounds length based on how many items are in the list
+        m_nRounds = Items.Length;
+    }
+
+    private void EndGame()
+    {
+        print("gameover");
     }
 }
 
