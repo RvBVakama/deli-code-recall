@@ -64,14 +64,24 @@ public class gameLogic : MonoBehaviour
         btnarr[num].transform.GetComponentInChildren<Text>().text = Items[m_nCorrectProduct].itemCode.ToString();
         // convert string to float and remember the correct code
         m_nCorrectCode = int.Parse(Items[m_nCorrectProduct].itemCode.ToString());
-        
+
         // the number to pick out
         n = Mathf.RoundToInt(Random.Range(0.0f, numlist.Count - 1));
         num = numlist[n];
         // remove this num from the list
         numlist.RemoveAt(n);
 
+        bool cont = true;
+
         btnarr[num].transform.GetComponentInChildren<Text>().text = Items[Random.Range(0, Items.Length)].itemCode.ToString();
+
+        while (cont)
+        {
+            if (btnarr[num].transform.GetComponentInChildren<Text>().text == m_nCorrectCode.ToString())
+                btnarr[num].transform.GetComponentInChildren<Text>().text = Items[Random.Range(0, Items.Length)].itemCode.ToString();
+            else
+                cont = false;
+        }
 
         // the number to pick out
         num = numlist[0];
@@ -79,12 +89,23 @@ public class gameLogic : MonoBehaviour
         numlist.RemoveAt(0);
 
         btnarr[num].transform.GetComponentInChildren<Text>().text = Items[Random.Range(0, Items.Length)].itemCode.ToString();
+
+        cont = true;
+
+        while (cont)
+        {
+            if (btnarr[num].transform.GetComponentInChildren<Text>().text == m_nCorrectCode.ToString())
+                btnarr[num].transform.GetComponentInChildren<Text>().text = Items[Random.Range(0, Items.Length)].itemCode.ToString();
+            else
+                cont = false;
+        }
     }
 
     int m_nGotCorrect = 0;
 
     public void Button1Clicked()
     {
+        print("wrong");
         // if this button has the correct code log that it was right
         if (m_nCorrectCode == int.Parse(btnarr[0].transform.GetComponentInChildren<Text>().text))
         {
@@ -93,12 +114,12 @@ public class gameLogic : MonoBehaviour
         }
         else
         {
-            print("wrong");
         }
     }
 
     public void Button2Clicked()
     {
+        print("wrong");
         // if this button has the correct code log that it was right
         if (m_nCorrectCode == int.Parse(btnarr[1].transform.GetComponentInChildren<Text>().text))
         {
@@ -107,12 +128,12 @@ public class gameLogic : MonoBehaviour
         }
         else
         {
-            print("wrong");
         }
     }
 
     public void Button3Clicked()
     {
+        print("wrong");
         // if this button has the correct code log that it was right
         if (m_nCorrectCode == int.Parse(btnarr[2].transform.GetComponentInChildren<Text>().text))
         {
@@ -121,7 +142,6 @@ public class gameLogic : MonoBehaviour
         }
         else
         {
-            print("wrong");
         }
     }
 
