@@ -13,6 +13,9 @@ public struct Items
 
 public class gameLogic : MonoBehaviour
 {
+    // the bg image sprite
+    public Sprite bg = null;
+
     // the number of rounds in a session
     private int m_nRounds = 0;
 
@@ -25,12 +28,15 @@ public class gameLogic : MonoBehaviour
     private void OnEnable()
     {
         // listereners on each button
-        btnarr[0] = GameObject.Find("Game").transform.GetChild(1).GetComponent<Button>();
-        btnarr[0].onClick.AddListener(Button1Clicked);
-        btnarr[1] = GameObject.Find("Game").transform.GetChild(2).GetComponent<Button>();
-        btnarr[1].onClick.AddListener(Button2Clicked);
-        btnarr[2] = GameObject.Find("Game").transform.GetChild(3).GetComponent<Button>();
-        btnarr[2].onClick.AddListener(Button3Clicked);
+        if (!btnarr[0])
+        {
+            btnarr[0] = GameObject.Find("Game").transform.GetChild(1).GetComponent<Button>();
+            btnarr[0].onClick.AddListener(Button1Clicked);
+            btnarr[1] = GameObject.Find("Game").transform.GetChild(2).GetComponent<Button>();
+            btnarr[1].onClick.AddListener(Button2Clicked);
+            btnarr[2] = GameObject.Find("Game").transform.GetChild(3).GetComponent<Button>();
+            btnarr[2].onClick.AddListener(Button3Clicked);
+        }
 
         LoadList();
 
@@ -115,50 +121,47 @@ public class gameLogic : MonoBehaviour
 
     public void Button1Clicked()
     {
-        ++m_nRoundCount;
-
         // if this button has the correct code log that it was right
         if (m_nCorrectCode == int.Parse(btnarr[0].transform.GetComponentInChildren<Text>().text))
         {
             ++m_nGotCorrect;
-            NewSet();
         }
         else
         {
             print("wrong");
         }
+        NewSet();
+        ++m_nRoundCount;
     }
 
     public void Button2Clicked()
     {
-        ++m_nRoundCount;
-
         // if this button has the correct code log that it was right
         if (m_nCorrectCode == int.Parse(btnarr[1].transform.GetComponentInChildren<Text>().text))
         {
             ++m_nGotCorrect;
-            NewSet();
         }
         else
         {
             print("wrong");
         }
+        NewSet();
+        ++m_nRoundCount;
     }
 
     public void Button3Clicked()
     {
-        ++m_nRoundCount;
-
         // if this button has the correct code log that it was right
         if (m_nCorrectCode == int.Parse(btnarr[2].transform.GetComponentInChildren<Text>().text))
         {
             ++m_nGotCorrect;
-            NewSet();
         }
         else
         {
             print("wrong");
         }
+        NewSet();
+        ++m_nRoundCount;
     }
 
     public void LoadList()
@@ -184,7 +187,18 @@ public class gameLogic : MonoBehaviour
 
     private void EndGame()
     {
-        print("gameover");
+        GetComponent<CanvasManager>().m_canResults.gameObject.SetActive(true);
+        GameObject.Find("GotCorrect").GetComponentInChildren<Text>().text = "Got correct: " + m_nGotCorrect.ToString() + "/" + m_nRounds;
+
+        ResetGame();
+    }
+
+    // reset all game values
+    private void ResetGame()
+    {
+        m_nRounds = 0;
+        m_nRoundCount = 0;
+        m_nGotCorrect = 0;
     }
 }
 
