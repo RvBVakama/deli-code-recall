@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,8 +24,9 @@ public class gameLogic : MonoBehaviour
     private int m_nRoundCount = 0;
 
     // list of items in list.txt
-    Items[] Items;
-
+    List<Items> lstItems;
+    List<float> lstItemCodes;
+    
     private void OnEnable()
     {
         // listereners on each button
@@ -45,22 +47,24 @@ public class gameLogic : MonoBehaviour
 
     // store all the buttons
     Button[] btnarr = new Button[3];
-    int m_nCorrectProduct = 0;
+    int m_nCorrectProductIndex = 0;
     int m_nCorrectCode = 0;
 
     public void NewSet()
     {
-        if (m_nRoundCount > m_nRounds)
+        if (lstItems.Count <= 0)
         {
             EndGame();
             return;
         }
 
+
         // the product to guess
-        m_nCorrectProduct = Random.Range(0, Items.Length);
+        m_nCorrectProductIndex = Random.Range(0, lstItems.Count);
+
 
         // set the name of the product
-        GameObject.Find("ProductName").GetComponent<Text>().text = Items[m_nCorrectProduct].itemName;
+        GameObject.Find("ProductName").GetComponent<Text>().text = lstItems[m_nCorrectProductIndex].itemName;
 
         // for the random picker logic
         List<int> numlist = new List<int>();
@@ -76,9 +80,9 @@ public class gameLogic : MonoBehaviour
         numlist.RemoveAt(n);
 
         // set the possible options from the list of codes
-        btnarr[num].transform.GetComponentInChildren<Text>().text = Items[m_nCorrectProduct].itemCode.ToString();
+        btnarr[num].transform.GetComponentInChildren<Text>().text = lstItems[m_nCorrectProductIndex].itemCode.ToString();
         // convert string to float and remember the correct code
-        m_nCorrectCode = int.Parse(Items[m_nCorrectProduct].itemCode.ToString());
+        m_nCorrectCode = int.Parse(lstItems[m_nCorrectProductIndex].itemCode.ToString());
 
         // the number to pick out
         n = Mathf.RoundToInt(Random.Range(0.0f, numlist.Count - 1));
@@ -86,35 +90,17 @@ public class gameLogic : MonoBehaviour
         // remove this num from the list
         numlist.RemoveAt(n);
 
-        bool cont = true;
-
-        btnarr[num].transform.GetComponentInChildren<Text>().text = Items[Random.Range(0, Items.Length)].itemCode.ToString();
-
-        while (cont)
-        {
-            if (btnarr[num].transform.GetComponentInChildren<Text>().text == m_nCorrectCode.ToString())
-                btnarr[num].transform.GetComponentInChildren<Text>().text = Items[Random.Range(0, Items.Length)].itemCode.ToString();
-            else
-                cont = false;
-        }
+        btnarr[num].transform.GetComponentInChildren<Text>().text = lstItemCodes[Random.Range(0, lstItems.Count)].ToString();
 
         // the number to pick out
         num = numlist[0];
         // remove the last value from the list
         numlist.RemoveAt(0);
 
-        btnarr[num].transform.GetComponentInChildren<Text>().text = Items[Random.Range(0, Items.Length)].itemCode.ToString();
+        btnarr[num].transform.GetComponentInChildren<Text>().text = lstItems[Random.Range(0, lstItems.Count)].itemCode.ToString();
 
-        cont = true;
-
-        while (cont)
-        {
-            if (btnarr[num].transform.GetComponentInChildren<Text>().text == m_nCorrectCode.ToString())
-                btnarr[num].transform.GetComponentInChildren<Text>().text = Items[Random.Range(0, Items.Length)].itemCode.ToString();
-            else
-                cont = false;
-        }
-
+        // make sure not to use this product again
+        lstItems.RemoveAt(m_nCorrectProductIndex);
     }
 
     int m_nGotCorrect = 0;
@@ -170,19 +156,30 @@ public class gameLogic : MonoBehaviour
         string[] items = File.ReadAllLines("Assets\\list.txt");
 
         // list of items
-        Items = new Items[items.Length / 2];
+        lstItems = new List<Items>();
 
         // convert to item struct array
         for (int i = 0; i < items.Length; i += 2)
         {
+            Items im = new Items();
             // product name
-            Items[i / 2].itemName = items[i];
+            im.itemName = items[i];
             // respective code
-            Items[i / 2].itemCode = float.Parse(items[i + 1]);
+            im.itemCode = float.Parse(items[i + 1]);
+            // add it
+            lstItems.Add(im);
+        }
+
+        // list of item names
+        lstItemCodes = new List<float>();
+
+        for (int i = 0; i < lstItems.Count; i++)
+        {
+            lstItemCodes.Add(lstItems[i].itemCode);
         }
 
         // set the rounds length based on how many items are in the list
-        m_nRounds = Items.Length;
+        m_nRounds = lstItems.Count;
     }
 
     private void EndGame()
