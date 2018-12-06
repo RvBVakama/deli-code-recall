@@ -15,7 +15,7 @@ public struct Items
 public class gameLogic : MonoBehaviour
 {
     // the bg image sprite
-    public Sprite bg = null;
+    public SpriteRenderer bg = null;
 
     // the number of rounds in a session
     private int m_nRounds = 0;
@@ -26,7 +26,7 @@ public class gameLogic : MonoBehaviour
     // list of items in list.txt
     List<Items> lstItems;
     List<float> lstItemCodes;
-    
+
     private void OnEnable()
     {
         // listereners on each button
@@ -111,13 +111,16 @@ public class gameLogic : MonoBehaviour
         if (m_nCorrectCode == int.Parse(btnarr[0].transform.GetComponentInChildren<Text>().text))
         {
             ++m_nGotCorrect;
+            bg.color = Color.green;
         }
         else
         {
             print("wrong");
+            bg.color = Color.red;
         }
         NewSet();
         ++m_nRoundCount;
+        Invoke("Normalbgcolor", 0.3f);
     }
 
     public void Button2Clicked()
@@ -126,13 +129,16 @@ public class gameLogic : MonoBehaviour
         if (m_nCorrectCode == int.Parse(btnarr[1].transform.GetComponentInChildren<Text>().text))
         {
             ++m_nGotCorrect;
+            bg.color = Color.green;
         }
         else
         {
             print("wrong");
+            bg.color = Color.red;
         }
         NewSet();
         ++m_nRoundCount;
+        Invoke("Normalbgcolor", 0.3f);
     }
 
     public void Button3Clicked()
@@ -141,13 +147,16 @@ public class gameLogic : MonoBehaviour
         if (m_nCorrectCode == int.Parse(btnarr[2].transform.GetComponentInChildren<Text>().text))
         {
             ++m_nGotCorrect;
+            bg.color = Color.green;
         }
         else
         {
             print("wrong");
+            bg.color = Color.red;
         }
         NewSet();
         ++m_nRoundCount;
+        Invoke("Normalbgcolor", 0.3f);
     }
 
     public void LoadList()
@@ -196,6 +205,11 @@ public class gameLogic : MonoBehaviour
         m_nRounds = 0;
         m_nRoundCount = 0;
         m_nGotCorrect = 0;
+    }
+
+    private void Normalbgcolor()
+    {
+        bg.color = Color.white;
     }
 }
 
