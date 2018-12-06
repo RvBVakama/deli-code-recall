@@ -249,7 +249,7 @@ public class gameLogic : MonoBehaviour
     }
 
     // reset all game values
-    private void ResetGame()
+    public void ResetGame()
     {
         m_nRounds = 0;
         m_nRoundCount = 0;

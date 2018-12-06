@@ -24,6 +24,7 @@ public class CanvasManager : MonoBehaviour
         m_canResults.gameObject.SetActive(false);
         m_canMainMenu.gameObject.SetActive(true);
         GetComponent<gameLogic>().enabled = false;
+        GetComponent<gameLogic>().ResetGame();
     }
 }
 
