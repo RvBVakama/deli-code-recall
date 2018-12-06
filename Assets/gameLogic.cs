@@ -1,7 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -60,7 +64,7 @@ public class gameLogic : MonoBehaviour
 
 
         // the product to guess
-        m_nCorrectProductIndex = Random.Range(0, lstItems.Count);
+        m_nCorrectProductIndex = UnityEngine.Random.Range(0, lstItems.Count);
 
 
         // set the name of the product
@@ -74,7 +78,7 @@ public class gameLogic : MonoBehaviour
             numlist.Add(i);
 
         // the number to pick out
-        int n = Mathf.RoundToInt(Random.Range(0.0f, numlist.Count - 1));
+        int n = Mathf.RoundToInt(UnityEngine.Random.Range(0.0f, numlist.Count - 1));
         int num = numlist[n];
         // remove this num from the list
         numlist.RemoveAt(n);
@@ -85,19 +89,19 @@ public class gameLogic : MonoBehaviour
         m_nCorrectCode = int.Parse(lstItems[m_nCorrectProductIndex].itemCode.ToString());
 
         // the number to pick out
-        n = Mathf.RoundToInt(Random.Range(0.0f, numlist.Count - 1));
+        n = Mathf.RoundToInt(UnityEngine.Random.Range(0.0f, numlist.Count - 1));
         num = numlist[n];
         // remove this num from the list
         numlist.RemoveAt(n);
 
-        btnarr[num].transform.GetComponentInChildren<Text>().text = lstItemCodes[Random.Range(0, lstItems.Count)].ToString();
+        btnarr[num].transform.GetComponentInChildren<Text>().text = lstItemCodes[UnityEngine.Random.Range(0, lstItems.Count)].ToString();
 
         // the number to pick out
         num = numlist[0];
         // remove the last value from the list
         numlist.RemoveAt(0);
 
-        btnarr[num].transform.GetComponentInChildren<Text>().text = lstItems[Random.Range(0, lstItems.Count)].itemCode.ToString();
+        btnarr[num].transform.GetComponentInChildren<Text>().text = lstItems[UnityEngine.Random.Range(0, lstItems.Count)].itemCode.ToString();
 
         // make sure not to use this product again
         lstItems.RemoveAt(m_nCorrectProductIndex);
@@ -159,10 +163,55 @@ public class gameLogic : MonoBehaviour
         Invoke("Normalbgcolor", 0.3f);
     }
 
+    public bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+    {
+        bool isOk = true;
+        // If there are errors in the certificate chain, look at each error to determine the cause.
+        if (sslPolicyErrors != SslPolicyErrors.None)
+        {
+            for (int i = 0; i < chain.ChainStatus.Length; i++)
+            {
+                if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
+                {
+                    chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+                    chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+                    chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 1, 0);
+                    chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
+                    bool chainIsValid = chain.Build((X509Certificate2)certificate);
+                    if (!chainIsValid)
+                    {
+                        isOk = false;
+                    }
+                }
+            }
+        }
+        return isOk;
+    }
+
     public void LoadList()
     {
+        string[] items;
+
+        // if connected to internet
+        if (Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork || Application.internetReachability == NetworkReachability.ReachableViaCarrierDataNetwork)
+        {
+            // download latest list
+            WebClient client = new WebClient();
+            ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+            Stream data = client.OpenRead(@"https://pastebin.com/raw/yAcmeGhv");
+            StreamReader reader = new StreamReader(data);
+            string s = reader.ReadToEnd();
+            string[] lines = s.Split(new[] { System.Environment.NewLine }, options: System.StringSplitOptions.None);
+
+            data.Close();
+            reader.Close();
+
+            items = lines;
+            File.WriteAllLines(Application.persistentDataPath + "/list.txt", items);
+        }
+
         // read in the list file
-        string[] items = File.ReadAllLines("Assets\\list.txt");
+        items = File.ReadAllLines(Application.persistentDataPath + "/list.txt");
 
         // list of items
         lstItems = new List<Items>();
