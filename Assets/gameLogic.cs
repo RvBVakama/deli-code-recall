@@ -242,8 +242,12 @@ public class gameLogic : MonoBehaviour
 
     private void EndGame()
     {
+        // show the results
         GetComponent<CanvasManager>().m_canResults.gameObject.SetActive(true);
         GameObject.Find("GotCorrect").GetComponentInChildren<Text>().text = "Got correct: " + m_nGotCorrect.ToString() + "/" + m_nRounds;
+
+        // close the games canvas
+        GetComponent<CanvasManager>().m_canGame.gameObject.SetActive(false);
 
         ResetGame();
     }
