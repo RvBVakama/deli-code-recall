@@ -14,7 +14,7 @@ public class CameraMode : MonoBehaviour
     {
         display = GetComponent<RawImage>();
         device = WebCamTexture.devices[whichCam];
-        tex = new WebCamTexture(device.name, 1080, 1920, 60);
+        tex = new WebCamTexture(device.name, 1080, 1920, 5);
         display.texture = tex;
         tex.Play();
     }
@@ -40,7 +40,7 @@ public class CameraMode : MonoBehaviour
         }
 
         device = WebCamTexture.devices[whichCam];
-        tex = new WebCamTexture(device.name, 1080, 1920, 60);
+        tex = new WebCamTexture(device.name, 1080, 1920, 5);
         display.texture = tex;
         tex.Play();
     }
