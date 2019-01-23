@@ -26,24 +26,13 @@ public class gameLogic : MonoBehaviour
 
     // the current round
     private int m_nRoundCount = 0;
-
+    
     // list of items in list.txt
     List<Items> lstItems;
     List<float> lstItemCodes;
 
     private void OnEnable()
     {
-        // listereners on each button
-        if (!btnarr[0])
-        {
-            btnarr[0] = GameObject.Find("Game").transform.GetChild(1).GetComponent<Button>();
-            btnarr[0].onClick.AddListener(Button1Clicked);
-            btnarr[1] = GameObject.Find("Game").transform.GetChild(2).GetComponent<Button>();
-            btnarr[1].onClick.AddListener(Button2Clicked);
-            btnarr[2] = GameObject.Find("Game").transform.GetChild(3).GetComponent<Button>();
-            btnarr[2].onClick.AddListener(Button3Clicked);
-        }
-
         LoadList();
 
         NewSet();
@@ -61,106 +50,20 @@ public class gameLogic : MonoBehaviour
             EndGame();
             return;
         }
-
-
-        // the product to guess
-        m_nCorrectProductIndex = UnityEngine.Random.Range(0, lstItems.Count);
-
-
-        // set the name of the product
-        GameObject.Find("ProductName").GetComponent<Text>().text = lstItems[m_nCorrectProductIndex].itemName;
-
-        // for the random picker logic
-        List<int> numlist = new List<int>();
-
-        // add numbers to the list
-        for (int i = 0; i < btnarr.Length; i++)
-            numlist.Add(i);
-
-        // the number to pick out
-        int n = Mathf.RoundToInt(UnityEngine.Random.Range(0.0f, numlist.Count - 1));
-        int num = numlist[n];
-        // remove this num from the list
-        numlist.RemoveAt(n);
-
-        // set the possible options from the list of codes
-        btnarr[num].transform.GetComponentInChildren<Text>().text = lstItems[m_nCorrectProductIndex].itemCode.ToString();
-        // convert string to float and remember the correct code
-        m_nCorrectCode = int.Parse(lstItems[m_nCorrectProductIndex].itemCode.ToString());
-
-        // the number to pick out
-        n = Mathf.RoundToInt(UnityEngine.Random.Range(0.0f, numlist.Count - 1));
-        num = numlist[n];
-        // remove this num from the list
-        numlist.RemoveAt(n);
-
-        btnarr[num].transform.GetComponentInChildren<Text>().text = lstItemCodes[UnityEngine.Random.Range(0, lstItems.Count)].ToString();
-
-        // the number to pick out
-        num = numlist[0];
-        // remove the last value from the list
-        numlist.RemoveAt(0);
-
-        btnarr[num].transform.GetComponentInChildren<Text>().text = lstItems[UnityEngine.Random.Range(0, lstItems.Count)].itemCode.ToString();
-
-        // make sure not to use this product again
-        lstItems.RemoveAt(m_nCorrectProductIndex);
     }
 
     int m_nGotCorrect = 0;
 
     public void Button1Clicked()
     {
-        // if this button has the correct code log that it was right
-        if (m_nCorrectCode == int.Parse(btnarr[0].transform.GetComponentInChildren<Text>().text))
-        {
-            ++m_nGotCorrect;
-            bg.color = Color.green;
-        }
-        else
-        {
-            print("wrong");
-            bg.color = Color.red;
-        }
-        NewSet();
-        ++m_nRoundCount;
-        Invoke("Normalbgcolor", 0.3f);
     }
 
     public void Button2Clicked()
     {
-        // if this button has the correct code log that it was right
-        if (m_nCorrectCode == int.Parse(btnarr[1].transform.GetComponentInChildren<Text>().text))
-        {
-            ++m_nGotCorrect;
-            bg.color = Color.green;
-        }
-        else
-        {
-            print("wrong");
-            bg.color = Color.red;
-        }
-        NewSet();
-        ++m_nRoundCount;
-        Invoke("Normalbgcolor", 0.3f);
     }
 
     public void Button3Clicked()
     {
-        // if this button has the correct code log that it was right
-        if (m_nCorrectCode == int.Parse(btnarr[2].transform.GetComponentInChildren<Text>().text))
-        {
-            ++m_nGotCorrect;
-            bg.color = Color.green;
-        }
-        else
-        {
-            print("wrong");
-            bg.color = Color.red;
-        }
-        NewSet();
-        ++m_nRoundCount;
-        Invoke("Normalbgcolor", 0.3f);
     }
 
     public bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
